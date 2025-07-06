@@ -4,101 +4,21 @@ A memory-augmented agent framework for LLMs.
 
 ## Quick Start
 
+Follow these steps to set up, use, and view data in Llamate with PostgreSQL:
+
 ### 1. Install Llamate
 
 ```bash
 pip install llamate
 ```
 
-### 2. PostgreSQL Setup
-
-To use Llamate with PostgreSQL:
-
-```bash
-# Run PostgreSQL with pgvector extension using Docker
-docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
-```
-
-### 3. Verifying PostgreSQL Installation
-
-Check if the container is running:
-```bash
-docker ps | grep llamate-postgres
-```
-
-Check PostgreSQL logs:
-```bash
-docker logs llamate-postgres
-```
-
-### 4. Accessing PostgreSQL Container
-
-Connect to PostgreSQL:
-```bash
-docker exec -it llamate-postgres psql -U llamate -d llamate
-```
-
-Useful PostgreSQL Commands:
-```sql
--- List all tables
-\dt
-
--- Check if pgvector extension is installed
-\dx
-
--- List all schemas
-\dn
-
--- Exit PostgreSQL shell
-\q
-```
-
-### 5. Initialize Llamate config
-
-```bash
-llamate --init
-```
-
-When prompted, choose `postgres` as your vector backend and enter this connection string:
-
-```
-postgresql://llamate:llamate@localhost:5432/llamate
-```
-
-### 6. Basic Usage
-
-```python
-from llamate import MemoryAgent, get_vectorstore_from_env
-
-# Create an agent with your config settings
-user_id = "test_user"
-vectorstore = get_vectorstore_from_env(user_id=user_id)
-agent = MemoryAgent(user_id=user_id, vectorstore=vectorstore)
-
-# Add a memory
-response = agent.chat("The capital of France is Paris")
-
-# Retrieve memory later
-response = agent.chat("What's the capital of France?")
-print(response)  # Will include information about Paris
-
-### 7. Interactive CLI
-
-```bash
-llamate
-```
-
-## Complete PostgreSQL End-to-End Flow
-
-Follow these steps to set up, use, and view data in Llamate with PostgreSQL:
-
-### 1. Start PostgreSQL Container
+### 2. Start PostgreSQL Container
 
 ```bash
 docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
 ```
 
-### 2. Initialize Llamate
+### 3. Initialize Llamate
 
 ```bash
 llamate --init
@@ -106,7 +26,7 @@ llamate --init
 # Enter connection string: postgresql://llamate:llamate@localhost:5432/llamate
 ```
 
-### 3. Run a Test Script to Store Data
+### 4. Run a Test Script to Store Data
 
 Create a file `test_llamate.py`:
 
@@ -131,7 +51,7 @@ response = agent.chat("Tell me about Paris.")
 print("Response:", response)
 ```
 
-### 4. View Data in PostgreSQL
+### 5. View Data in PostgreSQL
 
 Connect to the database:
 
