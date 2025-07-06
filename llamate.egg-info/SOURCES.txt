@@ -21,4 +21,5 @@ llamate.egg-info/top_level.txt
 llamate/commands/init.py
 tests/test_agent.py
 tests/test_embedder.py
+tests/test_memory_agent.py
 tests/test_vectorstore.py

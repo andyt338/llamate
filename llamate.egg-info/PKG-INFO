@@ -12,8 +12,9 @@ Requires-Dist: openai>=1.0.0
 Requires-Dist: faiss-cpu
 Requires-Dist: numpy
 Requires-Dist: python-dotenv
-Provides-Extra: postgres
-Requires-Dist: psycopg2-binary; extra == "postgres"
+Requires-Dist: psycopg2-binary
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
 Dynamic: author
 Dynamic: license-file
 Dynamic: requires-python
