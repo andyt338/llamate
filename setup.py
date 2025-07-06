@@ -6,7 +6,7 @@ setup(
     description="A memory-augmented framework for LLMs",
     author="Andy Thompson",
     author_email="andy338@gmail.com",
-    packages=find_packages(),
+    packages=find_packages(include=["llamate", "llamate.*"]),
     install_requires=[
         "openai>=1.0.0",
         "faiss-cpu",

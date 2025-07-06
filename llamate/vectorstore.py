@@ -3,33 +3,40 @@ import numpy as np
 import os
 import uuid
 import json
+from llamate.store import MemoryStore
+from llamate.embedder import OpenAIEmbedder
+from typing import List
 
-class FAISSVectorStore:
-    def __init__(self, user_id, embedding_dim=1536):
+class FAISSVectorStore(MemoryStore):
+    def __init__(self, user_id: str, embedder: OpenAIEmbedder):
         self.user_id = user_id
-        self.index = faiss.IndexFlatL2(embedding_dim)
-        self.memory_path = f"memory_{user_id}.json"
+        self.embedder = embedder
+        self.index = faiss.IndexFlatL2(1536)
+        self.texts = []
         self.memory_store = []
+        self.memory_path = f"{user_id}_memory.json"
         self._load()
 
-    def add(self, text: str, embedder):
-        vector = embedder.embed(text)
+    def add(self, text: str, vector_or_embedder):
+        # Handle both vector and embedder cases for consistency with PostgreSQL store
+        from llamate.embedder import OpenAIEmbedder
+        if isinstance(vector_or_embedder, OpenAIEmbedder):
+            vector = vector_or_embedder.embed(text)
+        else:
+            vector = vector_or_embedder
+            
+        self._add_vector(text, vector)
+
+    def _add_vector(self, text: str, vector: np.ndarray):
         self.index.add(np.array([vector]))
         self.memory_store.append({"id": str(uuid.uuid4()), "text": text, "vector": vector.tolist()})
         self._save()
 
-    def search(self, query: str, top_k=3):
-        if not self.memory_store:
-            return []
-        query_vector = self._embed_query(query)
-        D, I = self.index.search(np.array([query_vector]), top_k)
-        return [self.memory_store[i]["text"] for i in I[0] if i < len(self.memory_store)]
-
-    def _embed_query(self, query: str):
-        # Use the latest embedder on demand (cached by agent)
-        from llamate.embedder import OpenAIEmbedder
-        embedder = OpenAIEmbedder()
-        return embedder.embed(query)
+    def search(self, query: str, top_k: int = 3) -> List[str]:
+        query_vector = self.embedder.embed(query)
+        D, I = self.index.search(np.array([query_vector], dtype=np.float32), top_k)
+        # Return the stored text entries for the found indices (if valid)
+        return [self.memory_store[i]["text"] for i in I[0] if i != -1 and i < len(self.memory_store)]
 
     def _save(self):
         with open(self.memory_path, "w") as f:

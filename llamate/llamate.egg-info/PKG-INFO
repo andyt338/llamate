@@ -12,13 +12,17 @@ Requires-Dist: openai>=1.0.0
 Requires-Dist: faiss-cpu
 Requires-Dist: numpy
 Requires-Dist: python-dotenv
+Requires-Dist: psycopg2-binary
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
 Dynamic: author
 Dynamic: license-file
 Dynamic: requires-python
 
 # 🦙 llamate
 
-**llamate** is a memory-augmented agent framework for LLMs. It adds long-term memory to your AI agents using OpenAI embeddings and FAISS vector search.
+**llamate** is a memory-augmented agent framework for LLMs.
+It adds **long-term memory** to your AI agents using OpenAI embeddings and vector search (FAISS or Postgres).
 
 Easily plug it into your chatbot, assistant, or any language model workflow.
 
@@ -26,7 +30,13 @@ Easily plug it into your chatbot, assistant, or any language model workflow.
 
 ## 🚀 Installation
 
-Install locally (development mode):
+Install locally in editable mode:
+
+```bash
+pip install -e .[postgres]
+```
+
+Or install the core FAISS-only version:
 
 ```bash
 pip install -e .
@@ -40,7 +50,12 @@ pip install -e .
 from llamate import MemoryAgent
 
 agent = MemoryAgent(user_id="andy")
-response = agent.chat("What are our Black Friday plans?")
+
+# Add memory
+agent.chat("Our Q4 plan is to launch Black Friday campaigns.")
+
+# Recall memory
+response = agent.chat("What did I say about Q4?")
 print(response)
 ```
 
@@ -48,13 +63,14 @@ print(response)
 
 ## 💻 CLI Usage
 
-Launch a terminal-based memory agent session:
+Launch an interactive terminal session:
 
 ```bash
 python -m llamate.cli --user andy
 ```
 
-Example interaction:
+Example:
+
 ```bash
 You: Our Q4 plan is to launch Black Friday campaigns.
 LLAMate: Got it.
@@ -67,15 +83,27 @@ LLAMate: You said our Q4 plan is to launch Black Friday campaigns.
 
 ## ⚙️ Configuration
 
-Create a `.env` file in the root:
+Create a `.env` file (or use the provided `.env.example`) in your project root:
 
 ```env
-OPENAI_API_KEY=sk-...
+LLAMATE_OPENAI_API_KEY=sk-...
+LLAMATE_VECTOR_BACKEND=faiss  # or postgres
+LLAMATE_DATABASE_URL=postgresql://user:pass@localhost:5432/dbname  # if using Postgres
 ```
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Optional: Init Script
+
+To scaffold a working `.env` file and create the Postgres table automatically:
+
+```bash
+llamate --init
+```
+
+---
+
+## 🦪 Running Tests
 
 ```bash
 pytest tests/
@@ -87,26 +115,37 @@ pytest tests/
 
 ```
 llamate/
-├── agent.py          # MemoryAgent class
-├── embedder.py       # OpenAIEmbedder abstraction
-├── vectorstore.py    # FAISSVectorStore for semantic search
-├── cli.py            # CLI interface for interactive chat
-├── config.py         # Environment loader
-├── utils.py          # UUID + JSON helpers
+├── agent.py                 # MemoryAgent core
+├── embedder.py              # Embedding backend (OpenAI)
+├── vectorstore.py           # FAISS vector store
+├── vectorstore_postgres.py  # Postgres vector store (pgvector)
+├── backends.py              # Backend selector
+├── config.py                # Env var utilities
+├── cli.py                   # CLI interface
+├── store.py                 # Shared memory interface
+├── utils.py                 # Helpers
 ```
 
 ---
 
 ## ✨ Features
 
-- 🔐 OpenAI-compatible embedding backend (default)
-- 🔎 Vector-based semantic memory (FAISS)
-- 🧠 Multi-turn, persistent agent memory
-- 🧰 Simple, pluggable components
-- 🧪 Unit tested with `pytest`
+* 🔐 OpenAI-compatible embedding backend (pluggable)
+* 🔎 Vector search using FAISS or Postgres
+* 🧠 Multi-turn, persistent memory per user
+* 💡 Easily swappable vector store backends
+* 🦪 Fully tested with `pytest`
+* 🧠 Designed for integration into existing apps or backends
 
 ---
 
 ## 📄 License
 
-[MIT](./LICENSE) — build, modify, and distribute freely.
+[MIT](./LICENSE) — Build, modify, and distribute freely.
+
+---
+
+## 💡 Name origin
+
+> Like a *llama* with *memory* 🧠
+> Or a mate that remembers everything you say.

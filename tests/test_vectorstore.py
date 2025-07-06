@@ -3,9 +3,9 @@ from llamate.embedder import OpenAIEmbedder
 
 
 def test_add_and_search():
-    store = FAISSVectorStore(user_id="test_user")
     embedder = OpenAIEmbedder()
-    
+    store = FAISSVectorStore(user_id="test_user", embedder=embedder)
+
     store.add("The sky is blue.", embedder)
     results = store.search("What color is the sky?", top_k=1)
 

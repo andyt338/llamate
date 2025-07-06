@@ -12,8 +12,17 @@ dependencies = [
   "openai>=1.0.0",
   "faiss-cpu",
   "numpy",
-  "python-dotenv"
+  "python-dotenv",
+  "psycopg2-binary"
 ]
+
+[project.optional-dependencies]
+dev = [
+  "pytest"
+]
+
+[project.scripts]
+llamate = "llamate.cli:main"
 
 [build-system]
 requires = ["setuptools", "wheel"]

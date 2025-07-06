@@ -2,7 +2,6 @@ openai>=1.0.0
 faiss-cpu
 numpy
 python-dotenv
-psycopg2-binary
 
-[dev]
-pytest
+[postgres]
+psycopg2-binary
