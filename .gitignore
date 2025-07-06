@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+
+# Pytest cache
+.pytest_cache/
+
+# FAISS index files (optional)
+*.index
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# VSCode settings
+.vscode/

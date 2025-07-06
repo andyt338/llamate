@@ -1,0 +1,23 @@
+[project]
+name = "llamate"
+version = "0.1.0"
+description = "A memory-augmented framework for LLMs"
+authors = [
+  { name = "Andy Thompson", email = "andyt338@gmail.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "openai>=1.0.0",
+  "faiss-cpu",
+  "numpy",
+  "python-dotenv"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["llamate"]
