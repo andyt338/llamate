@@ -1,6 +1,26 @@
 # 🦙 Llamate
 
-A memory-augmented agent framework for LLMs.
+Llamate is a memory-augmented agent framework for Large Language Models (LLMs) that provides persistent, retrievable memory for AI conversations.
+
+## What is Llamate?
+
+Llamate solves a fundamental limitation of current LLMs: their inability to remember past conversations beyond a single context window. It creates a vector database of memories that can be semantically searched and retrieved during conversations, allowing LLMs to maintain continuity and context over extended interactions.
+
+## How It Works
+
+1. **Memory Storage**: Llamate stores important pieces of conversation as vector embeddings in a database (either FAISS or PostgreSQL).
+2. **Semantic Retrieval**: When new queries come in, Llamate searches for semantically relevant past memories.
+3. **Context Enhancement**: Retrieved memories are injected into the conversation context, allowing the LLM to access and utilize past information.
+4. **User Identification**: Each user gets a unique memory space, ensuring personalized conversation history.
+
+## Key Features
+
+- **Multiple Backend Support**: Works with FAISS (file-based) or PostgreSQL (with pgvector)
+- **Persistence**: Memories remain available between sessions and application restarts
+- **Simple API**: Easy-to-use Python interface that works with any LLM
+- **CLI Interface**: Command-line tool for quick testing and interaction
+- **Production Ready**: Designed for both development and production environments
+
 
 ## Quick Start
 
