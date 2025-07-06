@@ -25,3 +25,11 @@ ENV/
 
 # VSCode settings
 .vscode/
+
+# Package distribution / PyPI
+dist/
+build/
+*.egg-info/
+
+# Documentation files
+CONTRIBUTING.md
