@@ -1,10 +1,12 @@
 Metadata-Version: 2.4
 Name: llamate
-Version: 0.1.1
+Version: 0.1.3
 Summary: A memory-augmented framework for LLMs
 Author: Andy Thompson
 Author-email: Andy Thompson <andyt338@gmail.com>
 License: MIT
+Project-URL: Homepage, https://github.com/andyt338/llamate
+Project-URL: Bug Tracker, https://github.com/andyt338/llamate/issues
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
