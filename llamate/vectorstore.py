@@ -27,7 +27,7 @@ class FAISSVectorStore:
 
     def _embed_query(self, query: str):
         # Use the latest embedder on demand (cached by agent)
-        from memgpt.embedder import OpenAIEmbedder
+        from llamate.embedder import OpenAIEmbedder
         embedder = OpenAIEmbedder()
         return embedder.embed(query)
 

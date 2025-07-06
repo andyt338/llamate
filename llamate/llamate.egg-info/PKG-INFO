@@ -1,3 +1,21 @@
+Metadata-Version: 2.4
+Name: llamate
+Version: 0.1.0
+Summary: A memory-augmented framework for LLMs
+Author: Andy Thompson
+Author-email: Andy Thompson <andyt338@gmail.com>
+License: MIT
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: openai>=1.0.0
+Requires-Dist: faiss-cpu
+Requires-Dist: numpy
+Requires-Dist: python-dotenv
+Dynamic: author
+Dynamic: license-file
+Dynamic: requires-python
+
 # 🦙 llamate
 
 **llamate** is a memory-augmented agent framework for LLMs. It adds long-term memory to your AI agents using OpenAI embeddings and FAISS vector search.
@@ -22,12 +40,7 @@ pip install -e .
 from llamate import MemoryAgent
 
 agent = MemoryAgent(user_id="andy")
-
-# Add memory
-agent.chat("Our Q4 plan is to launch Black Friday campaigns.")
-
-# Recall memory
-response = agent.chat("What did I say about Q4?")
+response = agent.chat("What are our Black Friday plans?")
 print(response)
 ```
 

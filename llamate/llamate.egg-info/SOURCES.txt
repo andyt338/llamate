@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+llamate/llamate.egg-info/PKG-INFO
+llamate/llamate.egg-info/SOURCES.txt
+llamate/llamate.egg-info/dependency_links.txt
+llamate/llamate.egg-info/requires.txt
+llamate/llamate.egg-info/top_level.txt
+tests/test_agent.py
+tests/test_embedder.py
+tests/test_vectorstore.py
