@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llamate"
-version = "0.1.1"
+version = "0.1.2"
 description = "A memory-augmented framework for LLMs"
 authors = [
   { name = "Andy Thompson", email = "andyt338@gmail.com" }
@@ -12,6 +12,10 @@ authors = [
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.8"
+
+[project.urls]
+"Homepage" = "https://github.com/andyt338/llamate"
+"Bug Tracker" = "https://github.com/andyt338/llamate/issues"
 dependencies = [
   "openai>=1.0.0",
   "faiss-cpu",
