@@ -3,11 +3,14 @@ from llamate.store import MemoryStore
 from typing import List
 import psycopg2
 import psycopg2.extras
+import os
 
 class PostgresVectorStore(MemoryStore):
     def __init__(self, db_url: str, table: str = "memory"):
         self.conn = psycopg2.connect(db_url)
         self.table = table
+        # Default to 3072 for text-embedding-3-large but allow override via env var
+        self.embedding_dim = int(os.environ.get("LLAMATE_EMBEDDING_DIM", 3072))
         self._ensure_table()
 
     def _ensure_table(self):
@@ -39,7 +42,7 @@ class PostgresVectorStore(MemoryStore):
                 CREATE TABLE IF NOT EXISTS {self.table} (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     text TEXT NOT NULL,
-                    embedding VECTOR(1536)
+                    embedding VECTOR({self.embedding_dim})
                 );
             """)
             self.conn.commit()
@@ -55,6 +58,21 @@ class PostgresVectorStore(MemoryStore):
                 
             # Format vector as string for pgvector, e.g., '[0.1, 0.2, ...]'
             vector_str = f"[{','.join(map(str, vector.tolist()))}]"
+            
+            # Check for similar existing memories to avoid duplicates
+            # Find closest vector and its distance
+            cur.execute(f"""
+                SELECT text, embedding <-> %s::vector AS distance
+                FROM {self.table}
+                ORDER BY distance
+                LIMIT 1
+            """, (vector_str,))
+            
+            result = cur.fetchone()
+            if result and result[1] < 0.1:  # If similar memory exists with distance < 0.1
+                return
+                
+            # If we reach here, no close duplicate was found, so insert the new memory
             cur.execute(f"""
                 INSERT INTO {self.table} (text, embedding)
                 VALUES (%s, %s::vector)

@@ -15,6 +15,9 @@ class MemoryAgent:
         # Then search for relevant memories
         memories = self.vectorstore.search(user_input)
         
+        # Filter out the current query from results
+        memories = [m for m in memories if m != user_input]
+        
         # Format response
         if memories:
             context = "\n".join(memories)

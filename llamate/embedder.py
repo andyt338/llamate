@@ -2,7 +2,7 @@ from openai import OpenAI
 import numpy as np
 
 class OpenAIEmbedder:
-    def __init__(self, model="text-embedding-3-small"):
+    def __init__(self, model="text-embedding-3-large"):
         self.client = OpenAI()
         self.model = model
 

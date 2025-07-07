@@ -11,7 +11,8 @@ class FAISSVectorStore(MemoryStore):
     def __init__(self, user_id: str, embedder: OpenAIEmbedder):
         self.user_id = user_id
         self.embedder = embedder
-        self.index = faiss.IndexFlatL2(1536)
+        self.embedding_dim = int(os.environ.get("LLAMATE_EMBEDDING_DIM", 3072))
+        self.index = faiss.IndexFlatL2(self.embedding_dim)
         self.texts = []
         self.memory_store = []
         self.memory_path = f"{user_id}_memory.json"
@@ -24,6 +25,15 @@ class FAISSVectorStore(MemoryStore):
             vector = vector_or_embedder.embed(text)
         else:
             vector = vector_or_embedder
+            
+        # Check for similar existing memories to avoid duplicates
+        if len(self.memory_store) > 0:
+            # Use the vector we just created to search for similar existing memories
+            D, I = self.index.search(np.array([vector], dtype=np.float32), 1)
+            
+            # If we found a close match and the distance is small enough, skip adding
+            if I[0][0] != -1 and D[0][0] < 0.1:  # Smaller distance = more similar
+                return
             
         self._add_vector(text, vector)
 

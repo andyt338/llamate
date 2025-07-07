@@ -10,8 +10,9 @@ Llamate solves a fundamental limitation of current LLMs: their inability to reme
 
 1. **Memory Storage**: Llamate stores important pieces of conversation as vector embeddings in a database (either FAISS or PostgreSQL).
 2. **Semantic Retrieval**: When new queries come in, Llamate searches for semantically relevant past memories.
-3. **Context Enhancement**: Retrieved memories are injected into the conversation context, allowing the LLM to access and utilize past information.
-4. **User Identification**: Each user gets a unique memory space, ensuring personalized conversation history.
+3. **Memory Filtering**: The system automatically filters out the current query from search results to prevent echo effects.
+4. **Context Enhancement**: Retrieved memories are injected into the conversation context, allowing the LLM to access and utilize past information.
+5. **User Identification**: Each user gets a unique memory space, ensuring personalized conversation history.
 
 ## Key Features
 
@@ -32,13 +33,22 @@ Follow these steps to set up, use, and view data in Llamate with PostgreSQL:
 pip install llamate
 ```
 
-### 2. Start PostgreSQL Container
+### 2. OpenAI API Requirements
+
+Llamate requires access to the following OpenAI models in your account:
+
+- `text-embedding-3-large` - Used for vector embeddings
+- `gpt-4` - Recommended for high-quality responses
+
+Make sure these models are enabled in your OpenAI account and set your API key:
+
+### 3. Start PostgreSQL Container
 
 ```bash
 docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
 ```
 
-### 3. Initialize Llamate
+### 4. Initialize Llamate
 
 ```bash
 llamate --init
@@ -46,9 +56,7 @@ llamate --init
 # Enter connection string: postgresql://llamate:llamate@localhost:5432/llamate
 ```
 
-### 4. Run a Test Script to Store Data
-
-Create a file `test_llamate.py`:
+### 5. Test Llamate locally
 
 ```python
 from llamate import MemoryAgent, get_vectorstore_from_env
@@ -70,7 +78,7 @@ response = agent.chat("Tell me about Paris.")
 print("Response:", response)
 ```
 
-### 5. View Data in PostgreSQL
+### 6. View Data in PostgreSQL
 
 Connect to the database:
 
