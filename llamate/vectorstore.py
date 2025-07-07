@@ -11,7 +11,12 @@ class FAISSVectorStore(MemoryStore):
     def __init__(self, user_id: str, embedder: OpenAIEmbedder):
         self.user_id = user_id
         self.embedder = embedder
-        self.embedding_dim = int(os.environ.get("LLAMATE_EMBEDDING_DIM", 3072))
+        
+        # Get embedding dimension based on model
+        if embedder.model == "text-embedding-3-large":
+            self.embedding_dim = 3072
+        else:  # Default to dimensions for text-embedding-3-small
+            self.embedding_dim = 1536
         self.index = faiss.IndexFlatL2(self.embedding_dim)
         self.texts = []
         self.memory_store = []

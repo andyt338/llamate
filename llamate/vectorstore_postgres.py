@@ -6,11 +6,20 @@ import psycopg2.extras
 import os
 
 class PostgresVectorStore(MemoryStore):
-    def __init__(self, db_url: str, table: str = "memory"):
+    def __init__(self, db_url: str, table: str = "memory", embedder=None):
         self.conn = psycopg2.connect(db_url)
         self.table = table
-        # Default to 3072 for text-embedding-3-large but allow override via env var
-        self.embedding_dim = int(os.environ.get("LLAMATE_EMBEDDING_DIM", 3072))
+        
+        # Get embedding dimension based on model if embedder is provided
+        if embedder and hasattr(embedder, 'model'):
+            if embedder.model == "text-embedding-3-large":
+                self.embedding_dim = 3072
+            else:  # Default to dimensions for text-embedding-3-small
+                self.embedding_dim = 1536
+        else:
+            # Default to dimensions for text-embedding-3-small
+            self.embedding_dim = 1536
+            
         self._ensure_table()
 
     def _ensure_table(self):

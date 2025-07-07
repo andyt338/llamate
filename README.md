@@ -25,9 +25,11 @@ Llamate solves a fundamental limitation of current LLMs: their inability to reme
 
 ## Quick Start
 
-Follow these steps to set up, use, and view data in Llamate with PostgreSQL:
+### Local Development
 
-### 1. Install Llamate
+The following steps guide you through setting up Llamate for local development:
+
+#### 1. Install Package
 
 ```bash
 pip install llamate
@@ -37,10 +39,37 @@ pip install llamate
 
 Llamate requires access to the following OpenAI models in your account:
 
-- `text-embedding-3-large` - Used for vector embeddings
+- **Embedding models** (at least one of):
+  - `text-embedding-3-small` (default, 1536 dimensions) - Faster, smaller embeddings, cost-effective
+  - `text-embedding-3-large` (3072 dimensions) - Higher accuracy, larger embeddings
 - `gpt-4` - Recommended for high-quality responses
 
-Make sure these models are enabled in your OpenAI account and set your API key:
+Make sure these models are enabled in your OpenAI account.
+
+## Environment Variables
+
+Llamate is configured primarily through environment variables, making it easy to integrate with any backend deployment. The following environment variables are supported:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LLAMATE_OPENAI_API_KEY` | None (Required) | Your OpenAI API key |
+| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres` or `faiss`) |
+| `LLAMATE_DATABASE_URL` | `postgresql://llamate:llamate@localhost:5432/llamate` | PostgreSQL connection string (when using postgres backend) |
+| `LLAMATE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model to use (`text-embedding-3-small` or `text-embedding-3-large`) |
+
+Example configuration for production deployment:
+
+```bash
+# Required
+LLAMATE_OPENAI_API_KEY=sk-your-api-key
+
+# Optional overrides
+LLAMATE_VECTOR_BACKEND=postgres
+LLAMATE_DATABASE_URL=postgresql://user:password@your-db-host:5432/dbname
+LLAMATE_EMBEDDING_MODEL=text-embedding-3-large
+```
+
+> **Note:** While you can use `llamate --init` for local development to generate a `.env` file, in production environments you should configure these variables directly in your deployment platform.
 
 ### 3. Start PostgreSQL Container
 
@@ -76,6 +105,29 @@ agent.chat("Python is a programming language created by Guido van Rossum.")
 # Test retrieval
 response = agent.chat("Tell me about Paris.")
 print("Response:", response)
+```
+
+## Production Integration
+
+For production applications, you'll typically integrate Llamate directly into your backend services:
+
+```python
+from llamate import MemoryAgent, get_vectorstore_from_env
+import os
+
+# In production, set environment variables directly in your deployment platform
+# os.environ["LLAMATE_OPENAI_API_KEY"] = "your-key-here" # Set in platform instead
+# os.environ["LLAMATE_DATABASE_URL"] = "connection-string" # Set in platform instead
+
+def create_llamate_agent(user_id):
+    """Factory function to create a memory-augmented agent for a specific user"""
+    vectorstore = get_vectorstore_from_env(user_id=user_id)
+    return MemoryAgent(user_id=user_id, vectorstore=vectorstore)
+
+# Example API endpoint
+def handle_chat_request(user_id, user_message):
+    agent = create_llamate_agent(user_id)
+    return agent.chat(user_message)
 ```
 
 ### 6. View Data in PostgreSQL
