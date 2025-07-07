@@ -52,7 +52,6 @@ Create a file `test_llamate.py`:
 
 ```python
 from llamate import MemoryAgent, get_vectorstore_from_env
-import os
 
 # Set user ID
 user_id = "test_user"
