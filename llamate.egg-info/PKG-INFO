@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: llamate
-Version: 0.1.7
+Version: 0.1.8
 Summary: A memory-augmented framework for LLMs
 Author: Andy Thompson
 Author-email: Andy Thompson <andyt338@gmail.com>
@@ -15,6 +15,7 @@ Requires-Dist: faiss-cpu
 Requires-Dist: numpy
 Requires-Dist: python-dotenv
 Requires-Dist: psycopg2-binary
+Requires-Dist: marqo
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 Dynamic: author

@@ -11,3 +11,12 @@ def get_vector_backend():
 
 def get_database_url():
     return os.getenv("LLAMATE_DATABASE_URL", "postgresql://llamate:llamate@localhost:5432/llamate")
+
+def get_marqo_url():
+    return os.getenv("LLAMATE_MARQO_URL", "http://localhost:8882")
+
+def get_marqo_index_name():
+    return os.getenv("LLAMATE_MARQO_INDEX_NAME", "llamate")
+
+def get_marqo_model():
+    return os.getenv("LLAMATE_MARQO_MODEL", "hf/e5-base-v2")
