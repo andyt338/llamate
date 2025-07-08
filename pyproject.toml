@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llamate"
-version = "0.1.8"
+version = "0.1.9"
 description = "A memory-augmented framework for LLMs"
 authors = [
   { name = "Andy Thompson", email = "andyt338@gmail.com" }
@@ -17,7 +17,8 @@ dependencies = [
   "faiss-cpu",
   "numpy",
   "python-dotenv",
-  "psycopg2-binary"
+  "psycopg2-binary",
+  "marqo"
 ]
 
 [project.urls]

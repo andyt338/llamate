@@ -11,6 +11,7 @@ llamate/embedder.py
 llamate/store.py
 llamate/utils.py
 llamate/vectorstore.py
+llamate/vectorstore_marqo.py
 llamate/vectorstore_postgres.py
 llamate.egg-info/PKG-INFO
 llamate.egg-info/SOURCES.txt
@@ -21,5 +22,6 @@ llamate.egg-info/top_level.txt
 llamate/commands/init.py
 tests/test_agent.py
 tests/test_embedder.py
+tests/test_marqo_vectorstore.py
 tests/test_memory_agent.py
 tests/test_vectorstore.py

@@ -4,19 +4,19 @@ Llamate is a memory-augmented agent framework for Large Language Models (LLMs) t
 
 ## What is Llamate?
 
-Llamate solves a fundamental limitation of current LLMs: their inability to remember past conversations beyond a single context window. It creates a vector database of memories that can be semantically searched and retrieved during conversations, allowing LLMs to maintain continuity and context over extended interactions.
+Llamate solves a fundamental limitation of current LLMs: their inability to remember past conversations beyond a single context window. It creates a vector database of memories—text and images—that can be semantically searched and retrieved during conversations, allowing LLMs to maintain continuity and context over extended interactions.
 
 ## How It Works
 
-1. **Memory Storage**: Llamate stores important pieces of conversation as vector embeddings in a database (either FAISS or PostgreSQL).
-2. **Semantic Retrieval**: When new queries come in, Llamate searches for semantically relevant past memories.
+1. **Memory Storage**: Llamate stores important pieces of conversation and images as vector embeddings in a database (FAISS, PostgreSQL, or Marqo).
+2. **Semantic Retrieval**: When new queries come in, Llamate searches for semantically relevant past memories. 
 3. **Memory Filtering**: The system automatically filters out the current query from search results to prevent echo effects.
 4. **Context Enhancement**: Retrieved memories are injected into the conversation context, allowing the LLM to access and utilize past information.
 5. **User Identification**: Each user gets a unique memory space, ensuring personalized conversation history.
 
 ## Key Features
 
-- **Multiple Backend Support**: Works with FAISS (file-based) or PostgreSQL (with pgvector)
+- **Multiple Backend Support**: Works with FAISS (file-based), PostgreSQL (with pgvector), or Marqo (text and image support)
 - **Persistence**: Memories remain available between sessions and application restarts
 - **Simple API**: Easy-to-use Python interface that works with any LLM
 - **CLI Interface**: Command-line tool for quick testing and interaction
@@ -53,9 +53,12 @@ Llamate is configured primarily through environment variables, making it easy to
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LLAMATE_OPENAI_API_KEY` | None (Required) | Your OpenAI API key |
-| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres` or `faiss`) |
+| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres`, `faiss`, or `marqo`) |
 | `LLAMATE_DATABASE_URL` | `postgresql://llamate:llamate@localhost:5432/llamate` | PostgreSQL connection string (when using postgres backend) |
 | `LLAMATE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model to use (`text-embedding-3-small` or `text-embedding-3-large`) |
+| `LLAMATE_MARQO_URL` | `http://localhost:8882` | Marqo server URL (when using marqo backend) |
+| `LLAMATE_MARQO_INDEX_NAME` | `llamate` | Base index name for Marqo (user-specific indexes will be created) |
+| `LLAMATE_MARQO_MODEL` | `hf/e5-base-v2` | Embedding model for Marqo (supports text and image models) |
 
 Example configuration for production deployment:
 
@@ -63,26 +66,39 @@ Example configuration for production deployment:
 # Required
 LLAMATE_OPENAI_API_KEY=sk-your-api-key
 
-# Optional overrides
+# PostgreSQL backend
 LLAMATE_VECTOR_BACKEND=postgres
 LLAMATE_DATABASE_URL=postgresql://user:password@your-db-host:5432/dbname
 LLAMATE_EMBEDDING_MODEL=text-embedding-3-large
+
+# OR Marqo backend (for text and image support)
+LLAMATE_VECTOR_BACKEND=marqo
+LLAMATE_MARQO_URL=http://your-marqo-host:8882
+LLAMATE_MARQO_INDEX_NAME=llamate
+LLAMATE_MARQO_MODEL=hf/e5-base-v2
 ```
 
 > **Note:** While you can use `llamate --init` for local development to generate a `.env` file, in production environments you should configure these variables directly in your deployment platform.
 
-### 3. Start PostgreSQL Container
+### 3. Start Database Container
 
+**Option A: PostgreSQL (Traditional)**
 ```bash
 docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
+```
+
+**Option B: Marqo (Text and Image Support)**
+```bash
+docker run --name marqo -d -p 8882:8882 marqoai/marqo:latest
 ```
 
 ### 4. Initialize Llamate
 
 ```bash
 llamate --init
-# Select 'postgres' as your vector store backend
-# Enter connection string: postgresql://llamate:llamate@localhost:5432/llamate
+# Select your vector store backend:
+# - 'postgres' for traditional text-only storage
+# - 'marqo' for text and image support
 ```
 
 ### 5. Test Llamate locally
@@ -180,9 +196,11 @@ Exit the PostgreSQL shell:
 \q
 ```
 
+
 ## Features
 
-- Persistent memory for AI using vector embeddings
-- Multiple vector store backends (FAISS and PostgreSQL)
-- Easy integration into existing applications
-- Simple CLI for testing and demonstration
+- **Persistent Memory**: AI conversations with long-term context
+- **Text and Image Support**: Store and search both text and images (Marqo required)
+- **Multiple Backends**: FAISS (local), PostgreSQL (traditional), or Marqo (text and image support)
+- **Easy Integration**: Simple Python API for any application
+- **CLI Interface**: Command-line tool for testing and demonstration
