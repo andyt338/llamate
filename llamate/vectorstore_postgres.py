@@ -23,29 +23,6 @@ class PostgresVectorStore(MemoryStore):
 
     def _ensure_table(self):
         with self.conn.cursor() as cur:
-            # Create pgvector extension if it doesn't exist
-            try:
-                cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-                self.conn.commit()
-            except Exception as e:
-                # Check if pgvector extension exists despite the error
-                try:
-                    cur.execute("SELECT * FROM pg_extension WHERE extname = 'vector';")
-                    extension_exists = cur.fetchone() is not None
-                    if extension_exists:
-                        # Extension exists, we can continue
-                        print("✅ pgvector extension is already installed.")
-                    else:
-                        print(f"❌ Error: Could not create or find the 'vector' extension: {e}")
-                        print("\nTo fix this issue, please try one of the following:")
-                        print("1. Make sure you're using a PostgreSQL database with pgvector installed")
-                        print("2. Connect with a superuser account to create the extension")
-                        print("3. Run this SQL command as a superuser: CREATE EXTENSION vector;")
-                        print("\nNote: The ankane/pgvector Docker image has this extension pre-installed.")
-                except Exception:
-                    # Couldn't even check for the extension
-                    print(f"❌ Error: Could not create 'vector' extension: {e}")
-
             cur.execute(f"""
                 CREATE TABLE IF NOT EXISTS "{self.table}" (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
