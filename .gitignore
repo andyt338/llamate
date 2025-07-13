@@ -33,3 +33,7 @@ build/
 
 # Documentation files
 CONTRIBUTING.md
+
+bin/
+lib/
+pyvenv.cfg
