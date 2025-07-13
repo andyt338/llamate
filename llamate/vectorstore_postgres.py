@@ -32,8 +32,19 @@ class PostgresVectorStore(MemoryStore):
             """)
             self.conn.commit()
 
-    def add(self, text: str, vector_or_embedder):
+    def add(self, text, vector_or_embedder):
         with self.conn.cursor() as cur:
+            # Handle dictionary input (chat messages)
+            if isinstance(text, dict):
+                if 'content' in text:
+                    text_content = text['content']
+                else:
+                    # If we can't find usable content, log and skip
+                    print(f"Warning: Could not extract content from dict: {text}")
+                    return
+            else:
+                text_content = text
+                
             # Handle the case where an embedder is passed instead of a vector
             from llamate.embedder import OpenAIEmbedder
             if isinstance(vector_or_embedder, OpenAIEmbedder):
@@ -66,7 +77,7 @@ class PostgresVectorStore(MemoryStore):
             cur.execute(f"""
                 INSERT INTO "{self.table}" (text, embedding)
                 VALUES (%s, %s::vector)
-            """, (text, vector_str))
+            """, (text_content, vector_str))
             self.conn.commit()
 
     def search(self, query: str, top_k: int = 3) -> List[str]:
