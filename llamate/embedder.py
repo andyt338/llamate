@@ -22,6 +22,6 @@ class OpenAIEmbedder:
     def embed(self, text: str):
         response = self.client.embeddings.create(
             model=self.model,
-            input=text
+            input=[text]  # OpenAI API expects a list of strings
         )
         return response.data[0].embedding

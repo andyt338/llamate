@@ -211,9 +211,30 @@ psql
 ```
 CREATE DATABASE mydb;
 CREATE USER myuser WITH ENCRYPTED PASSWORD 'mypassword';
-GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+
+-- Connect to the newly created database
+\c mydb
+
+-- Create the pgvector extension in this specific database
 CREATE EXTENSION vector;
+
+-- Grant database privileges to the myuser user
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+
+-- Grant schema privileges to the myuser user
+GRANT ALL PRIVILEGES ON SCHEMA public TO myuser;
+
+-- If tables already exist, grant privileges on those too
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO myuser;
+
+-- Allow the user to create new tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO myuser;
+
+-- Verify extension is installed
 \dx
+
 \q
 
 exit  # to return to VM
