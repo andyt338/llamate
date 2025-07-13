@@ -31,9 +31,6 @@ class OpenAIEmbedder:
             # Use as is if it's a string
             text_content = text
             
-        print(f"Extracted text for embedding: {text_content}")
-        print(f"Model: {self.model}")
-        
         response = self.client.embeddings.create(
             model=self.model,
             input=[text_content]  # OpenAI API expects a list of strings
