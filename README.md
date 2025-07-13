@@ -25,17 +25,13 @@ Llamate solves a fundamental limitation of current LLMs: their inability to reme
 
 ## Quick Start
 
-### Local Development
-
-The following steps guide you through setting up Llamate for local development:
-
 #### 1. Install Package
 
 ```bash
 pip install llamate
 ```
 
-### 2. OpenAI API Requirements
+#### 2. OpenAI API Requirements
 
 Llamate requires access to the following OpenAI models in your account:
 
@@ -46,15 +42,15 @@ Llamate requires access to the following OpenAI models in your account:
 
 Make sure these models are enabled in your OpenAI account.
 
-## Environment Variables
+#### 3. Environment Variables
 
 Llamate is configured primarily through environment variables, making it easy to integrate with any backend deployment. The following environment variables are supported:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LLAMATE_OPENAI_API_KEY` | None (Required) | Your OpenAI API key |
-| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres`) |
-| `LLAMATE_DATABASE_URL` | `postgresql://llamate:llamate@localhost:5432/llamate` | PostgreSQL connection string (when using postgres backend) |
+| `LLAMATE_DATABASE_URL` | None (Required) | PostgreSQL connection string (when using postgres backend) |
+| `LLAMATE_VECTOR_BACKEND` | `postgres` (Required) | Vector store backend (`postgres`) |
 | `LLAMATE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model to use (`text-embedding-3-small` or `text-embedding-3-large`) |
 
 Example configuration for production deployment:
@@ -62,54 +58,14 @@ Example configuration for production deployment:
 ```bash
 # Required
 LLAMATE_OPENAI_API_KEY=sk-your-api-key
+LLAMATE_DATABASE_URL=postgresql://user:password@your-db-host:5432/dbname
+LLAMATE_VECTOR_BACKEND=postgres
 
 # Optional overrides
-LLAMATE_VECTOR_BACKEND=postgres
-LLAMATE_DATABASE_URL=postgresql://user:password@your-db-host:5432/dbname
 LLAMATE_EMBEDDING_MODEL=text-embedding-3-large
 ```
 
-> **Note:** While you can use `llamate --init` for local development to generate a `.env` file, in production environments you should configure these variables directly in your deployment platform.
-
-### 3. Start PostgreSQL Container
-
-```bash
-docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
-```
-
-### 4. Initialize Llamate
-
-```bash
-llamate --init
-# Select 'postgres' as your vector store backend
-# Enter connection string: postgresql://llamate:llamate@localhost:5432/llamate
-```
-
-### 5. Test Llamate locally
-
-```python
-from llamate import MemoryAgent, get_vectorstore_from_env
-
-# Set user ID
-user_id = "test_user"
-
-# Initialize components
-vectorstore = get_vectorstore_from_env(user_id=user_id)
-agent = MemoryAgent(user_id=user_id, vectorstore=vectorstore)
-
-# Add memories
-agent.chat("The capital of France is Paris.")
-agent.chat("The Eiffel Tower is 324 meters tall.")
-agent.chat("Python is a programming language created by Guido van Rossum.")
-
-# Test retrieval
-response = agent.chat("Tell me about Paris.")
-print("Response:", response)
-```
-
-## Production Integration
-
-For production applications, you'll typically integrate Llamate directly into your backend services:
+#### 4. Example Integration
 
 ```python
 from llamate import MemoryAgent, get_vectorstore_from_env
@@ -130,9 +86,47 @@ def handle_chat_request(user_id, user_message):
     return agent.chat(user_message)
 ```
 
-### 6. View Data in PostgreSQL
+## Local Development
 
-Connect to the database:
+The following steps guide you through setting up Llamate for local development:
+
+1. Create a local Docker container
+```bash
+docker run --name llamate-postgres -e POSTGRES_USER=llamate -e POSTGRES_PASSWORD=llamate -e POSTGRES_DB=llamate -p 5432:5432 -d ankane/pgvector
+```
+
+2. In a separate terminal, initialize llamate
+
+```bash
+llamate --init
+# Select 'postgres' as your vector store backend
+# Enter connection string: postgresql://llamate:llamate@localhost:5432/llamate
+```
+
+> **Note:** While you can use `llamate --init` for local development to generate a `.env` file, in production environments you should configure these variables directly in your deployment platform.
+
+3. Now test the package in a python terminal or script
+```python
+from llamate import MemoryAgent, get_vectorstore_from_env
+
+# Set user ID
+user_id = "test_user"
+
+# Initialize components
+vectorstore = get_vectorstore_from_env(user_id=user_id)
+agent = MemoryAgent(user_id=user_id, vectorstore=vectorstore)
+
+# Add memories
+agent.chat("The capital of France is Paris.")
+agent.chat("The Eiffel Tower is 324 meters tall.")
+agent.chat("Python is a programming language created by Guido van Rossum.")
+
+# Test retrieval
+response = agent.chat("Tell me about Paris.")
+print("Response:", response)
+```
+
+To view the data in the local PostgreSQL container, connect to the database:
 
 ```bash
 docker exec -it llamate-postgres psql -U llamate -d llamate
@@ -186,3 +180,63 @@ Exit the PostgreSQL shell:
 - Vector store backends (PostgreSQL)
 - Easy integration into existing applications
 - Simple CLI for testing and demonstration
+
+## How to create Postgres DB in AWS:
+
+First, create an EC2 instance in AWS.
+
+* OS: Ubuntu
+* Type: t3.micro, 30 GB general purpose SSD (free tier limit)
+* Create new keypair, store it securely somewhere
+* Create new VPC and subnet if you need to. Enable public IPs in the subnet if it asks.
+* Create new security group, allow port 22 from your IP address, port 5432 from 0.0.0.0/0
+* Select your new security group in the dropdown
+* Launch instance
+
+1. SSH into instance:
+
+```
+chmod 400 ~/Downloads/my-keypair.pem
+ssh -i ~/Downloads/my-keypair.pem ubuntu@44.203.101.127
+```
+
+Local .pem file name and public IP of the VM will be different. Username will be ubuntu.
+
+2. Install Postgres on the VM:
+
+```
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+sudo systemctl status postgresql
+
+sudo -i -u postgres
+psql
+```
+
+3. Create DB, user, and vector extension
+```
+CREATE DATABASE mydb;
+CREATE USER myuser WITH ENCRYPTED PASSWORD 'mypassword';
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
+CREATE EXTENSION vector;
+\dx
+\q
+
+exit  # to return to VM
+```
+
+4. Configure Postgres service
+
+```
+sudo nano /etc/postgresql/16/main/postgresql.conf
+# set:
+# listen_addresses = '*'
+
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+# add:
+# host    all             all             0.0.0.0/0               md5
+
+sudo systemctl restart postgresql
+sudo systemctl status postgresql
+```
