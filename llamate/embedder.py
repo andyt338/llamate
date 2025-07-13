@@ -20,6 +20,10 @@ class OpenAIEmbedder:
             self.model = env_model
 
     def embed(self, text: str):
+        print(f"Embedding text: {text}")
+        print(f"Model: {self.model}")
+        print(f"As list: {[text]}")
+        
         response = self.client.embeddings.create(
             model=self.model,
             input=[text]  # OpenAI API expects a list of strings
