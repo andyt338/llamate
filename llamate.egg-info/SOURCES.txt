@@ -10,7 +10,6 @@ llamate/config.py
 llamate/embedder.py
 llamate/store.py
 llamate/utils.py
-llamate/vectorstore.py
 llamate/vectorstore_postgres.py
 llamate.egg-info/PKG-INFO
 llamate.egg-info/SOURCES.txt

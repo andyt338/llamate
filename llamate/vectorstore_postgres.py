@@ -47,7 +47,7 @@ class PostgresVectorStore(MemoryStore):
                     print(f"❌ Error: Could not create 'vector' extension: {e}")
 
             cur.execute(f"""
-                CREATE TABLE IF NOT EXISTS {self.table} (
+                CREATE TABLE IF NOT EXISTS "{self.table}" (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     text TEXT NOT NULL,
                     embedding VECTOR({self.embedding_dim})
@@ -76,7 +76,7 @@ class PostgresVectorStore(MemoryStore):
             # Find closest vector and its distance
             cur.execute(f"""
                 SELECT text, embedding <-> %s::vector AS distance
-                FROM {self.table}
+                FROM "{self.table}"
                 ORDER BY distance
                 LIMIT 1
             """, (vector_str,))
@@ -87,7 +87,7 @@ class PostgresVectorStore(MemoryStore):
                 
             # If we reach here, no close duplicate was found, so insert the new memory
             cur.execute(f"""
-                INSERT INTO {self.table} (text, embedding)
+                INSERT INTO "{self.table}" (text, embedding)
                 VALUES (%s, %s::vector)
             """, (text, vector_str))
             self.conn.commit()
@@ -107,7 +107,7 @@ class PostgresVectorStore(MemoryStore):
         
         with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(f"""
-                SELECT text FROM {self.table}
+                SELECT text FROM "{self.table}"
                 ORDER BY embedding <-> %s::vector
                 LIMIT %s
             """, (vector_str, top_k))
