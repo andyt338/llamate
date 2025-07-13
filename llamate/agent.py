@@ -1,5 +1,5 @@
 from .embedder import OpenAIEmbedder
-from .vectorstore import FAISSVectorStore
+from .vectorstore_postgres import PostgresVectorStore
 
 
 class MemoryAgent:

@@ -8,7 +8,7 @@ Llamate solves a fundamental limitation of current LLMs: their inability to reme
 
 ## How It Works
 
-1. **Memory Storage**: Llamate stores important pieces of conversation as vector embeddings in a database (either FAISS or PostgreSQL).
+1. **Memory Storage**: Llamate stores important pieces of conversation as vector embeddings in a database (PostgreSQL is the only supported DB).
 2. **Semantic Retrieval**: When new queries come in, Llamate searches for semantically relevant past memories.
 3. **Memory Filtering**: The system automatically filters out the current query from search results to prevent echo effects.
 4. **Context Enhancement**: Retrieved memories are injected into the conversation context, allowing the LLM to access and utilize past information.
@@ -16,7 +16,7 @@ Llamate solves a fundamental limitation of current LLMs: their inability to reme
 
 ## Key Features
 
-- **Multiple Backend Support**: Works with FAISS (file-based) or PostgreSQL (with pgvector)
+- **Backend Support**: Works with PostgreSQL (with pgvector)
 - **Persistence**: Memories remain available between sessions and application restarts
 - **Simple API**: Easy-to-use Python interface that works with any LLM
 - **CLI Interface**: Command-line tool for quick testing and interaction
@@ -53,7 +53,7 @@ Llamate is configured primarily through environment variables, making it easy to
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LLAMATE_OPENAI_API_KEY` | None (Required) | Your OpenAI API key |
-| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres` or `faiss`) |
+| `LLAMATE_VECTOR_BACKEND` | `postgres` | Vector store backend (`postgres`) |
 | `LLAMATE_DATABASE_URL` | `postgresql://llamate:llamate@localhost:5432/llamate` | PostgreSQL connection string (when using postgres backend) |
 | `LLAMATE_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model to use (`text-embedding-3-small` or `text-embedding-3-large`) |
 
@@ -183,6 +183,6 @@ Exit the PostgreSQL shell:
 ## Features
 
 - Persistent memory for AI using vector embeddings
-- Multiple vector store backends (FAISS and PostgreSQL)
+- Vector store backends (PostgreSQL)
 - Easy integration into existing applications
 - Simple CLI for testing and demonstration

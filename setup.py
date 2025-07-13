@@ -9,8 +9,6 @@ setup(
     packages=find_packages(include=["llamate", "llamate.*"]),
     install_requires=[
         "openai>=1.0.0",
-        "faiss-cpu",
-        "numpy",
         "python-dotenv"
     ],
     include_package_data=True,

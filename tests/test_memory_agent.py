@@ -1,6 +1,5 @@
 import os
 import pytest
-import numpy as np
 from llamate.agent import MemoryAgent
 from llamate.vectorstore_postgres import PostgresVectorStore
 from llamate.embedder import OpenAIEmbedder

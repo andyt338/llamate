@@ -1,4 +1,3 @@
-import numpy as np
 from llamate.store import MemoryStore
 from typing import List
 import psycopg2
@@ -66,7 +65,12 @@ class PostgresVectorStore(MemoryStore):
                 vector = vector_or_embedder
                 
             # Format vector as string for pgvector, e.g., '[0.1, 0.2, ...]'
-            vector_str = f"[{','.join(map(str, vector.tolist()))}]"
+            # Handle both numpy arrays and Python lists
+            if hasattr(vector, 'tolist'):
+                vector_list = vector.tolist()
+            else:
+                vector_list = vector
+            vector_str = f"[{','.join(map(str, vector_list))}]"
             
             # Check for similar existing memories to avoid duplicates
             # Find closest vector and its distance
@@ -94,7 +98,12 @@ class PostgresVectorStore(MemoryStore):
         query_vector = embedder.embed(query)
         
         # Format vector as string for pgvector, e.g., '[0.1, 0.2, ...]'
-        vector_str = f"[{','.join(map(str, query_vector.tolist()))}]"
+        # Handle both numpy arrays and Python lists
+        if hasattr(query_vector, 'tolist'):
+            vector_list = query_vector.tolist()
+        else:
+            vector_list = query_vector
+        vector_str = f"[{','.join(map(str, vector_list))}]"
         
         with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute(f"""

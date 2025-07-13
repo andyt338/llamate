@@ -12,7 +12,7 @@ from openai import OpenAI
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from llamate import MemoryAgent
-from llamate.vectorstore import FAISSVectorStore
+from llamate.vectorstore_postgres import PostgresVectorStore
 from llamate.embedder import OpenAIEmbedder
 
 def main():
@@ -25,7 +25,7 @@ def main():
     # Initialize Llamate components
     user_id = "advanced_user"
     embedder = OpenAIEmbedder()
-    vectorstore = FAISSVectorStore(user_id=user_id, embedder=embedder)
+    vectorstore = PostgresVectorStore(user_id=user_id, embedder=embedder)
     
     # Create memory agent
     agent = MemoryAgent(

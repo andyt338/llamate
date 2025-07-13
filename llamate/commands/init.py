@@ -5,7 +5,7 @@ from llamate.embedder import OpenAIEmbedder
 def run_init():
     print("🧠 LLAMate Init")
 
-    backend = input("Choose vector backend (postgres/faiss) [postgres]: ").strip().lower() or "postgres"
+    backend = input("Choose vector backend [postgres]: ").strip().lower() or "postgres"
     api_key = input("Enter your OpenAI API key: ").strip()
     
     # Prompt for embedding model choice

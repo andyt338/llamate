@@ -1,5 +1,4 @@
 from openai import OpenAI
-import numpy as np
 import os
 
 class OpenAIEmbedder:
@@ -25,4 +24,4 @@ class OpenAIEmbedder:
             model=self.model,
             input=text
         )
-        return np.array(response.data[0].embedding).astype("float32")
+        return response.data[0].embedding
