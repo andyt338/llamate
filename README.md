@@ -174,13 +174,6 @@ Exit the PostgreSQL shell:
 \q
 ```
 
-## Features
-
-- Persistent memory for AI using vector embeddings
-- Vector store backends (PostgreSQL)
-- Easy integration into existing applications
-- Simple CLI for testing and demonstration
-
 ## How to create Postgres DB in AWS:
 
 First, create an EC2 instance in AWS.
